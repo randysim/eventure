@@ -1,8 +1,10 @@
 package com.eventure.backend.model;
 
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "site_user")
@@ -22,6 +24,10 @@ public class User {
     private String email;
     private String picture;
     private LocalDate createdAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Plan> plans;
 
     public User() {}
     public User(String username, String email, LocalDate createdAt) {
@@ -68,4 +74,18 @@ public class User {
     public String getPicture() { return picture; }
 
     public void setPicture(String picture) { this.picture = picture; }
+
+    public void addPlan(Plan plan) {
+        plan.setUser(this);
+        this.plans.add(plan);
+    }
+
+    public void removePlan(Plan plan) {
+        this.plans.remove(plan);
+        plan.setUser(null);
+    }
+
+    public List<Plan> getPlans() {
+        return this.plans;
+    }
 }
