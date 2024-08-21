@@ -1,6 +1,8 @@
 package com.eventure.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 
@@ -25,6 +27,7 @@ public class Step {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "day_id")
+    @JsonBackReference
     private Day day;
 
     public Step() {}

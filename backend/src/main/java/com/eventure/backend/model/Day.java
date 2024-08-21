@@ -1,6 +1,9 @@
 package com.eventure.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -22,9 +25,11 @@ public class Day {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
+    @JsonBackReference
     private Plan plan;
 
     @OneToMany(mappedBy = "day", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Step> steps;
 
     public Day() {}
@@ -64,9 +69,5 @@ public class Day {
     public void removeStep(Step step) {
         steps.remove(step);
         step.setDay(null);
-    }
-
-    public List<Step> getSteps() {
-        return steps;
     }
 }

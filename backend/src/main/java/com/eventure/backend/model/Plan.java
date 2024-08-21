@@ -1,6 +1,9 @@
 package com.eventure.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,13 +26,21 @@ public class Plan {
     private String notes;
     private Boolean isPublic;
     private LocalDate createdAt;
+    private LocalDate updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Day> days;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "todolist_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private TodoList todoList;
 
     public Plan() {}
     public Plan(String title, String notes, Boolean isPublic) {
@@ -37,6 +48,7 @@ public class Plan {
         this.notes = notes;
         this.isPublic = isPublic;
         this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
     }
 
     public Long getId() {
@@ -99,5 +111,22 @@ public class Plan {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setTodoList(TodoList todoList) {
+        this.todoList = todoList;
+        todoList.setPlan(this);
+    }
+
+    public TodoList getTodoList() {
+        return this.todoList;
     }
 }
