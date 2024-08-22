@@ -101,8 +101,12 @@ public class Plan {
         day.setPlan(null);
     }
 
-    public List<Day> getDays(Day day) {
+    public List<Day> getDays() {
         return this.days;
+    }
+
+    public void setDays(List<Day> days) {
+        this.days = days;
     }
 
     public User getUser() {
