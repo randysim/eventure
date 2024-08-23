@@ -92,16 +92,25 @@ public class PlanService {
 
     /* delete plan by id */
     public void deletePlan(String userEmail, Long id) {
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        }
+
+        User user = userOptional.get();
         Optional<Plan> planOptional = planRepository.findById(id);
+
         if (planOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found.");
         }
 
         Plan plan = planOptional.get();
+
         if (!plan.getUser().getEmail().equals(userEmail)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authorized to delete this plan.");
         }
 
-        planRepository.delete(plan);
+        user.removePlan(plan);
+        userRepository.save(user);
     }
 }

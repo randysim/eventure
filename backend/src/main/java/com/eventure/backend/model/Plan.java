@@ -37,6 +37,10 @@ public class Plan {
     @JsonManagedReference
     private List<Day> days;
 
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<SharedUser> sharedUsers;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "todolist_id", referencedColumnName = "id")
     @JsonManagedReference
@@ -132,5 +136,15 @@ public class Plan {
 
     public TodoList getTodoList() {
         return this.todoList;
+    }
+
+    public void addSharedUser(SharedUser sharedUser) {
+        sharedUser.setPlan(this);
+        this.sharedUsers.add(sharedUser);
+    }
+
+    public void removeSharedUser(SharedUser sharedUser) {
+        sharedUser.setPlan(null);
+        this.sharedUsers.remove(sharedUser);
     }
 }
