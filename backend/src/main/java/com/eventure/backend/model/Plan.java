@@ -1,9 +1,7 @@
 package com.eventure.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,18 +31,9 @@ public class Plan {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", referencedColumnName = "id")
     private List<Day> days;
-
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<SharedUser> sharedUsers;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "todolist_id", referencedColumnName = "id")
-    @JsonManagedReference
-    private TodoList todoList;
 
     public Plan() {}
     public Plan(String title, String notes, Boolean isPublic) {
@@ -95,24 +84,6 @@ public class Plan {
         this.createdAt = createdAt;
     }
 
-    public void addDay(Day day) {
-        day.setPlan(this);
-        this.days.add(day);
-    }
-
-    public void removeDay(Day day) {
-        this.days.remove(day);
-        day.setPlan(null);
-    }
-
-    public List<Day> getDays() {
-        return this.days;
-    }
-
-    public void setDays(List<Day> days) {
-        this.days = days;
-    }
-
     public User getUser() {
         return user;
     }
@@ -129,22 +100,11 @@ public class Plan {
         this.updatedAt = updatedAt;
     }
 
-    public void setTodoList(TodoList todoList) {
-        this.todoList = todoList;
-        todoList.setPlan(this);
+    public List<Day> getDays() {
+        return days;
     }
 
-    public TodoList getTodoList() {
-        return this.todoList;
-    }
-
-    public void addSharedUser(SharedUser sharedUser) {
-        sharedUser.setPlan(this);
-        this.sharedUsers.add(sharedUser);
-    }
-
-    public void removeSharedUser(SharedUser sharedUser) {
-        sharedUser.setPlan(null);
-        this.sharedUsers.remove(sharedUser);
+    public void setDays(List<Day> days) {
+        this.days = days;
     }
 }

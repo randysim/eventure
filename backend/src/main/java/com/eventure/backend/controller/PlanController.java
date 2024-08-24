@@ -1,5 +1,7 @@
 package com.eventure.backend.controller;
 
+import com.eventure.backend.dto.inbound.PlanRequestDTO;
+import com.eventure.backend.dto.outbound.PlanResponseDTO;
 import com.eventure.backend.model.Plan;
 import com.eventure.backend.security.GoogleOAuth2User;
 import com.eventure.backend.service.PlanService;
@@ -23,8 +25,8 @@ public class PlanController {
     }
 
     @PostMapping
-    public Plan createPlan(@AuthenticationPrincipal GoogleOAuth2User principal, @RequestBody Plan plan){
-        return planService.createPlan(principal.getEmail(), plan);
+    public PlanResponseDTO createPlan(@AuthenticationPrincipal GoogleOAuth2User principal, @RequestBody Plan planDTO){
+        return planService.createPlan(principal.getEmail(), planDTO);
     }
 
     @PutMapping(path = "/{planId}")

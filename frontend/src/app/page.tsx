@@ -1,9 +1,17 @@
 'use client'
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import UserContext from "@/components/context/UserContext";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const user = useContext(UserContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user.loading && user.signedIn) {
+      router.push("/dashboard");
+    }
+  }, [user])
 
   return (
     <div>

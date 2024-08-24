@@ -26,7 +26,6 @@ public class User {
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Plan> plans;
 
     public User() {}

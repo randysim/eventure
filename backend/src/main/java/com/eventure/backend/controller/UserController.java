@@ -1,5 +1,6 @@
 package com.eventure.backend.controller;
 
+import com.eventure.backend.dto.outbound.PlanResponseDTO;
 import com.eventure.backend.model.Plan;
 import com.eventure.backend.model.User;
 import com.eventure.backend.security.GoogleOAuth2User;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/plans")
-    public List<Plan> getPlans(@AuthenticationPrincipal GoogleOAuth2User principal) {
+    public List<PlanResponseDTO> getPlans(@AuthenticationPrincipal GoogleOAuth2User principal) {
         return planService.getUserPlans(principal.getEmail());
     }
 }
