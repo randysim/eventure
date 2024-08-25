@@ -44,6 +44,7 @@ const Plan = ({ params } : { params: { id: number }}) => {
     }, [editing]);
 
     const save = async () => {
+        console.log(plan);
         try {
             let res = await fetch(`http://localhost:8080/api/v1/plans/${params.id}`, { 
                 method: "PUT", 
@@ -82,14 +83,39 @@ const Plan = ({ params } : { params: { id: number }}) => {
                     )
                 }
             </div>
+
+            <input type="text" className="border-2 border-black" value={plan?.title} onChange={(e) => {
+                setPlan({ ...plan, title: e.target.value });
+                setEditing(true);
+            }} />
+
+            <button onClick={() => {
+                setPlan({ ...plan, days: [...plan.days, { order: plan.days.length + 1, steps: [] }] });
+                setEditing(true);
+            }}>Add Day</button>
+
             {
-                editing ? (
-                    <input type="text" className="border-2 border-black" value={plan?.title} onChange={(e) => {
-                        setPlan({ ...plan, title: e.target.value });
-                    }} />
-                ) : (
-                    <h1>{plan?.title}</h1>
-                )
+                plan.days.sort((a, b) => a.order - b.order).map(day => (
+                    <div key={day.id}>
+                        Day {day.order}
+                        <button onClick={
+                            () => {
+                                setPlan({ 
+                                    ...plan, 
+                                    days: [...plan.days.filter(d => d.order !== day.order), { order: day.order, steps: [...day.steps, { order: day.steps.length + 1, description: "testdesc", start: "12:00:00", end: "01:00:00" }] }]
+                                });
+                                setEditing(true);
+                            }
+                        }>Create Step</button>
+                        {
+                            day.steps.sort((a, b) => a.order - b.order).map(step => (
+                                <div key={step.id}>
+                                    {step.description}: {step.start} - {step.end}
+                                </div>
+                            ))
+                        }
+                    </div>
+                ))
             }
         </div>
     )

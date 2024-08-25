@@ -5,6 +5,7 @@ import com.eventure.backend.dto.outbound.PlanResponseDTO;
 import com.eventure.backend.model.Plan;
 import com.eventure.backend.security.GoogleOAuth2User;
 import com.eventure.backend.service.PlanService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class PlanController {
     }
 
     @PostMapping
+    @Transactional
     public PlanResponseDTO createPlan(@AuthenticationPrincipal GoogleOAuth2User principal, @RequestBody Plan planDTO){
         return planService.createPlan(principal.getEmail(), planDTO);
     }

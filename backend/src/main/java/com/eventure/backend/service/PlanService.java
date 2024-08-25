@@ -4,17 +4,20 @@ import com.eventure.backend.dto.inbound.PlanRequestDTO;
 import com.eventure.backend.dto.outbound.PlanResponseDTO;
 import com.eventure.backend.model.Day;
 import com.eventure.backend.model.Plan;
+import com.eventure.backend.model.Step;
 import com.eventure.backend.model.User;
 import com.eventure.backend.repository.DayRepository;
 import com.eventure.backend.repository.PlanRepository;
+import com.eventure.backend.repository.StepRepository;
 import com.eventure.backend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,12 +28,20 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
     private final DayRepository dayRepository;
+    private final StepRepository stepRepository;
+    private static final Logger log = LoggerFactory.getLogger(PlanService.class);
 
     @Autowired
-    public PlanService(PlanRepository planRepository, UserRepository userRepository, DayRepository dayRepository) {
+    public PlanService(
+            PlanRepository planRepository,
+            UserRepository userRepository,
+            DayRepository dayRepository,
+            StepRepository stepRepository
+    ) {
         this.planRepository = planRepository;
         this.userRepository = userRepository;
         this.dayRepository = dayRepository;
+        this.stepRepository = stepRepository;
     }
 
     /* Get User Plans */
@@ -102,8 +113,10 @@ public class PlanService {
         plan.getDays().clear();
 
         for (Day day : planDTO.getDays()) {
+            Day savedDay;
+
             if (day.getId() == null) {
-                plan.getDays().add(new Day(day.getOrder()));
+                savedDay = new Day(day.getOrder());
             } else {
                 Optional<Day> dayOptional = dayRepository.findById(day.getId());
 
@@ -111,8 +124,36 @@ public class PlanService {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Day not found.");
                 }
 
-                plan.getDays().add(dayOptional.get());
+                savedDay = dayOptional.get();
+                savedDay.setOrder(day.getOrder());
             }
+
+            savedDay.getSteps().clear();
+            for (Step step : day.getSteps()) {
+                Step savedStep;
+
+                if (step.getId() == null) {
+                    savedStep = step;
+                } else {
+                    Optional<Step> stepOptional = stepRepository.findById(step.getId());
+                    if (stepOptional.isEmpty()) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Step not found.");
+                    }
+
+                    savedStep = stepOptional.get();
+                }
+
+                savedStep.setOrder(step.getOrder());
+                savedStep.setDescription(step.getDescription());
+                savedStep.setStart(step.getStart());
+                savedStep.setEnd(step.getEnd());
+                stepRepository.save(savedStep);
+                savedDay.getSteps().add(savedStep);
+            }
+
+            dayRepository.save(savedDay);
+
+            plan.getDays().add(savedDay);
         }
 
         plan.setUpdatedAt(LocalDate.now());

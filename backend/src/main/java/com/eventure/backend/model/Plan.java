@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,7 @@ public class Plan {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "id")
-    private List<Day> days;
+    private List<Day> days = new ArrayList<>();
 
     public Plan() {}
     public Plan(String title, String notes, Boolean isPublic) {

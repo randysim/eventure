@@ -23,6 +23,15 @@ interface Plan {
 }
 
 interface Day {
-    id: number;
+    id?: number;
     order: number;
+    steps: Step[];
+}
+
+interface Step {
+    id?: number;
+    order: number;
+    description: string;
+    start: String;
+    end: String;
 }

@@ -2,6 +2,10 @@ package com.eventure.backend.model;
 
 import jakarta.persistence.*;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "day")
 public class Day {
@@ -17,8 +21,12 @@ public class Day {
     )
     private Long id;
 
-    @Column(name = "plan_order")
+    @Column(name = "day_order")
     private int order;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "day_id", referencedColumnName = "id")
+    private List<Step> steps = new ArrayList<>();
 
     public Day() {}
     public Day(int order) {
@@ -39,5 +47,13 @@ public class Day {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
     }
 }
