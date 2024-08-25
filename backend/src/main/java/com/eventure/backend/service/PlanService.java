@@ -10,6 +10,7 @@ import com.eventure.backend.repository.DayRepository;
 import com.eventure.backend.repository.PlanRepository;
 import com.eventure.backend.repository.StepRepository;
 import com.eventure.backend.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /* Note: Plan serializes all the children, so when getting and updating must include all children */
@@ -110,59 +113,75 @@ public class PlanService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authorized to update this plan.");
         }
 
-        plan.getDays().clear();
+        if (plan.getDays().size() > 0) {
+            log.info("Initial Size: " + plan.getDays().get(0).getSteps().size());
+        }
 
-        for (Day day : planDTO.getDays()) {
-            Day savedDay;
+        // Map of existing Days to easily find them
+        Map<Long, Day> existingDaysMap = plan.getDays().stream()
+                .collect(Collectors.toMap(Day::getId, Function.identity()));
 
-            if (day.getId() == null) {
-                savedDay = new Day(day.getOrder());
+        plan.getDays().clear(); // Clear the days to update
+
+        for (Day dayDTO : planDTO.getDays()) {
+            Day day;
+
+            if (dayDTO.getId() == null) {
+                // New Day
+                day = new Day(dayDTO.getOrder());
             } else {
-                Optional<Day> dayOptional = dayRepository.findById(day.getId());
+                // Existing Day, fetch from the map
+                day = existingDaysMap.get(dayDTO.getId());
 
-                if (dayOptional.isEmpty()) {
+                if (day == null) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Day not found.");
                 }
 
-                savedDay = dayOptional.get();
-                savedDay.setOrder(day.getOrder());
+                day.setOrder(dayDTO.getOrder());
             }
 
-            savedDay.getSteps().clear();
-            for (Step step : day.getSteps()) {
-                Step savedStep;
+            log.info("List Size: " + day.getSteps().size());
+            // Map of existing Steps to handle updates and new entries
+            Map<Long, Step> existingStepsMap = day.getSteps().stream()
+                    .collect(Collectors.toMap(Step::getId, Function.identity()));
 
-                if (step.getId() == null) {
-                    savedStep = step;
+            day.getSteps().clear(); // Clear steps to update
+
+            for (Step stepDTO : dayDTO.getSteps()) {
+                Step step;
+
+                if (stepDTO.getId() == null) {
+                    // New Step
+                    step = new Step();
                 } else {
-                    Optional<Step> stepOptional = stepRepository.findById(step.getId());
-                    if (stepOptional.isEmpty()) {
+                    // Existing Step, fetch from the map
+                    step = existingStepsMap.get(stepDTO.getId());
+
+                    if (step == null) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Step not found.");
                     }
-
-                    savedStep = stepOptional.get();
                 }
 
-                savedStep.setOrder(step.getOrder());
-                savedStep.setDescription(step.getDescription());
-                savedStep.setStart(step.getStart());
-                savedStep.setEnd(step.getEnd());
-                stepRepository.save(savedStep);
-                savedDay.getSteps().add(savedStep);
+                step.setOrder(stepDTO.getOrder());
+                step.setDescription(stepDTO.getDescription());
+                step.setStart(stepDTO.getStart());
+                step.setEnd(stepDTO.getEnd());
+                day.getSteps().add(step);
+
+                stepRepository.save(step);
             }
 
-            dayRepository.save(savedDay);
-
-            plan.getDays().add(savedDay);
+            plan.getDays().add(day);
+            dayRepository.save(day);
         }
 
         plan.setUpdatedAt(LocalDate.now());
         plan.setTitle(planDTO.getTitle());
         plan.setNotes(planDTO.getNotes());
 
-        planRepository.save(plan);
+        log.info("After size: " + plan.getDays().get(0).getSteps().size());
 
-        return plan;
+        return planRepository.save(plan);
     }
 
     /* delete plan by id */

@@ -32,6 +32,7 @@ public class PlanController {
     }
 
     @PutMapping(path = "/{planId}")
+    @Transactional
     public Plan updatePlan(@AuthenticationPrincipal GoogleOAuth2User principal, @PathVariable Long planId, @RequestBody Plan plan){
         return planService.updatePlan(principal.getEmail(), planId, plan);
     }

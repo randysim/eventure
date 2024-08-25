@@ -44,7 +44,7 @@ const Plan = ({ params } : { params: { id: number }}) => {
     }, [editing]);
 
     const save = async () => {
-        console.log(plan);
+        console.log("PLAN", plan);
         try {
             let res = await fetch(`http://localhost:8080/api/v1/plans/${params.id}`, { 
                 method: "PUT", 
@@ -56,11 +56,13 @@ const Plan = ({ params } : { params: { id: number }}) => {
             });
 
             if (!res.ok) {
-                console.log(res)
-                let txt = await res.text();
-                console.log(txt)
                 alert("Failed to save plan");
             }
+
+            let json = await res.json();
+            console.log(json);
+
+            
 
             setEditing(false);
         } catch(error) {
@@ -102,7 +104,7 @@ const Plan = ({ params } : { params: { id: number }}) => {
                             () => {
                                 setPlan({ 
                                     ...plan, 
-                                    days: [...plan.days.filter(d => d.order !== day.order), { order: day.order, steps: [...day.steps, { order: day.steps.length + 1, description: "testdesc", start: "12:00:00", end: "01:00:00" }] }]
+                                    days: [...plan.days.filter(d => d.order !== day.order), { id: day.id, order: day.order, steps: [...day.steps, { order: day.steps.length + 1, description: "testdesc", start: "12:00:00", end: "01:00:00" }] }]
                                 });
                                 setEditing(true);
                             }
