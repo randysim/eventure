@@ -32,6 +32,6 @@ interface Step {
     id?: number;
     order: number;
     description: string;
-    start: String;
-    end: String;
+    start: string;
+    end: string;
 }
