@@ -212,89 +212,98 @@ const Plan = ({ params }: { params: { id: number } }) => {
     };
 
     return (
-        <div style={{ maxWidth: "800px", margin: "0 auto", paddingTop: "30px" }}>
-            {editing && (
-                <div style={{
-                    position: "fixed",
-                    bottom: "20px", // Adjust the gap from the bottom
-                    right: "20px", // Adjust the gap from the right
-                    display: "flex",
-                    gap: "10px",
-                    border: "2px solid #333", // Background color of the snackbar
-                    padding: "10px",
-                    borderRadius: "15px",
-                    color: "#fff" // Text color of the snackbar
-                }}>
-                    <Button onClick={save}>Save</Button>
-                    <Button onClick={() => { setEditing(false); }}>Cancel</Button>
-                </div>
-            )}
-            <Input
-                type="text"
-                style={{ width: "100%", marginBottom: "20px" }}
-                value={plan?.title}
-                onChange={(e) => {
-                    setPlan((prev) => ({ ...prev, title: e.target.value }));
-                    setEditing(true);
-                }}
-            />
-
-            <Button
-                style={{ marginBottom: "20px" }}
-                onClick={() => {
-                    setPlan((prev) => ({
-                        ...prev,
-                        days: [...prev.days, { order: prev.days.length + 1, steps: [] }],
-                    }));
-                    setEditing(true);
-                }}
-            >
-                Add Day
-            </Button>
-
-            {plan.days
-                .sort((a, b) => a.order - b.order)
-                .map((day, dayIndex) => (
-                    <div key={day.id} style={{ marginBottom: "30px" }}>
-                        <div style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "center" }}>
-                            <div>Day {day.order}</div>
-                            <Button onClick={() => handleMoveDayUp(dayIndex)}>Move Up</Button>
-                            <Button onClick={() => handleMoveDayDown(dayIndex)}>Move Down</Button>
-                            <Button variant="destructive" onClick={() => handleDeleteDay(day.order)}>Delete Day</Button>
-                        </div>
-                        <Button
-                            onClick={() => handleCreateStep(day.order)}
-                            style={{ marginBottom: "10px" }}
-                        >
-                            Add Step
-                        </Button>
-
-                        {day.steps
-                            .sort((a, b) => a.order - b.order)
-                            .map((step, stepIndex) => (
-                                <div key={step.order} style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
-                                    <Input
-                                        placeholder="Description"
-                                        value={step.description}
-                                        onChange={(e) => handleEditStep(day.order, step.order, "description", e.target.value)}
-                                    />
-                                    <Input
-                                        placeholder="Start Time"
-                                        value={step.start}
-                                        onChange={(e) => handleEditStep(day.order, step.order, "start", e.target.value)}
-                                    />
-                                    <Input
-                                        placeholder="End Time"
-                                        value={step.end}
-                                        onChange={(e) => handleEditStep(day.order, step.order, "end", e.target.value)}
-                                    />
-                                    <Button onClick={() => handleMoveStepUp(day.order, stepIndex)}>Move Up</Button>
-                                    <Button onClick={() => handleMoveStepDown(day.order, stepIndex)}>Move Down</Button>
-                                    <Button variant="destructive" onClick={() => handleDeleteStep(day.order, step.order)}>Delete Step</Button>
-                                </div>
-                            ))}
+        <div>
+            <div className="w-full pl-10 pt-10">
+                <Button
+                    onClick={() => router.push("/dashboard")}
+                >
+                    Back
+                </Button>
+            </div>
+            <div style={{ maxWidth: "800px", margin: "0 auto", paddingTop: "30px" }}>
+                {editing && (
+                    <div style={{
+                        position: "fixed",
+                        bottom: "20px", // Adjust the gap from the bottom
+                        right: "20px", // Adjust the gap from the right
+                        display: "flex",
+                        gap: "10px",
+                        border: "2px solid #333", // Background color of the snackbar
+                        padding: "10px",
+                        borderRadius: "15px",
+                        color: "#fff" // Text color of the snackbar
+                    }}>
+                        <Button onClick={save}>Save</Button>
+                        <Button onClick={() => { setEditing(false); }}>Cancel</Button>
                     </div>
-                ))}
+                )}
+                <Input
+                    type="text"
+                    style={{ width: "100%", marginBottom: "20px" }}
+                    value={plan?.title}
+                    onChange={(e) => {
+                        setPlan((prev) => ({ ...prev, title: e.target.value }));
+                        setEditing(true);
+                    }}
+                />
+
+                <Button
+                    style={{ marginBottom: "20px" }}
+                    onClick={() => {
+                        setPlan((prev) => ({
+                            ...prev,
+                            days: [...prev.days, { order: prev.days.length + 1, steps: [] }],
+                        }));
+                        setEditing(true);
+                    }}
+                >
+                    Add Day
+                </Button>
+
+                {plan.days
+                    .sort((a, b) => a.order - b.order)
+                    .map((day, dayIndex) => (
+                        <div key={day.id} style={{ marginBottom: "30px" }}>
+                            <div style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "center" }}>
+                                <div>Day {day.order}</div>
+                                <Button onClick={() => handleMoveDayUp(dayIndex)}>Move Up</Button>
+                                <Button onClick={() => handleMoveDayDown(dayIndex)}>Move Down</Button>
+                                <Button variant="destructive" onClick={() => handleDeleteDay(day.order)}>Delete Day</Button>
+                            </div>
+                            <Button
+                                onClick={() => handleCreateStep(day.order)}
+                                style={{ marginBottom: "10px" }}
+                            >
+                                Add Step
+                            </Button>
+
+                            {day.steps
+                                .sort((a, b) => a.order - b.order)
+                                .map((step, stepIndex) => (
+                                    <div key={step.order} style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <Input
+                                            placeholder="Description"
+                                            value={step.description}
+                                            onChange={(e) => handleEditStep(day.order, step.order, "description", e.target.value)}
+                                        />
+                                        <Input
+                                            placeholder="Start Time"
+                                            value={step.start}
+                                            onChange={(e) => handleEditStep(day.order, step.order, "start", e.target.value)}
+                                        />
+                                        <Input
+                                            placeholder="End Time"
+                                            value={step.end}
+                                            onChange={(e) => handleEditStep(day.order, step.order, "end", e.target.value)}
+                                        />
+                                        <Button onClick={() => handleMoveStepUp(day.order, stepIndex)}>Move Up</Button>
+                                        <Button onClick={() => handleMoveStepDown(day.order, stepIndex)}>Move Down</Button>
+                                        <Button variant="destructive" onClick={() => handleDeleteStep(day.order, step.order)}>Delete Step</Button>
+                                    </div>
+                                ))}
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 };

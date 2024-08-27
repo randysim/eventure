@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -11,21 +12,26 @@ const DashboardPlan = (
     {
         title,
         updatedAt,
-        onView
+        onView,
+        onDelete
     } :
     {
         title: string,
         updatedAt: string,
-        onView: () => void
+        onView: () => void,
+        onDelete: () => void
     }
 ) => {
     return (
-        <Card className="w-[350px]">
+        <Card className="w-[350px] m-10 p-5">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>Last Updated On: {updatedAt}</CardDescription>
             </CardHeader>
-            <button onClick={onView}>View</button>
+            <CardFooter className="flex space-x-5">
+                <Button onClick={onView}>View</Button>
+                <Button onClick={onDelete}>Delete</Button>
+            </CardFooter>
         </Card>
     );
 }

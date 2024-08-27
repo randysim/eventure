@@ -50,9 +50,34 @@ export default function Dashboard() {
             let data = await res.json();
             setTitle("");
 
+            if (!res.ok) {
+                alert("Failed to create plan");
+                return;
+            }
+
             setPlans([...plans, data]);
         } catch(error) {
             console.error(error);
+        }
+    }
+
+    const deletePlan = async (id : number) => {
+        try {
+            let res = await fetch(`http://localhost:8080/api/v1/plans/${id}`, { 
+                method: "DELETE", 
+                credentials: "include"
+            });
+
+            if (!res.ok) {
+                let json = await res.json();
+                console.log(json);
+                alert("Failed to delete plan");
+                return;
+            }
+
+            setPlans(plans.filter(plan => plan.id !== id));
+        } catch(error) {
+            console.error(error)
         }
     }
 
@@ -62,14 +87,15 @@ export default function Dashboard() {
                 <Input className="w-[500px] m-[20px]" placeholder="Plan Name" value={title} onChange={e => setTitle(e.target.value)} />
                 <Button className="w-[500px] m-[20px]" onClick={createPlan}>Create Plan</Button>
             </div>
-            <div>
+            <div className="flex flex-wrap p-10">
                 {
                     plans.map(plan => (
                         <DashboardPlan 
                             key={plan.id} 
                             title={plan.title}
                             updatedAt={plan.updatedAt}
-                            onView={() => router.push(`/plans/${plan.id}`)} 
+                            onView={() => router.push(`/plans/${plan.id}`)}
+                            onDelete={() => deletePlan(plan.id)} 
                         />
                     ))
                 }

@@ -113,10 +113,6 @@ public class PlanService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authorized to update this plan.");
         }
 
-        if (plan.getDays().size() > 0) {
-            log.info("Initial Size: " + plan.getDays().get(0).getSteps().size());
-        }
-
         // Map of existing Days to easily find them
         Map<Long, Day> existingDaysMap = plan.getDays().stream()
                 .collect(Collectors.toMap(Day::getId, Function.identity()));
@@ -140,7 +136,6 @@ public class PlanService {
                 day.setOrder(dayDTO.getOrder());
             }
 
-            log.info("List Size: " + day.getSteps().size());
             // Map of existing Steps to handle updates and new entries
             Map<Long, Step> existingStepsMap = day.getSteps().stream()
                     .collect(Collectors.toMap(Step::getId, Function.identity()));
@@ -178,8 +173,6 @@ public class PlanService {
         plan.setUpdatedAt(LocalDate.now());
         plan.setTitle(planDTO.getTitle());
         plan.setNotes(planDTO.getNotes());
-
-        log.info("After size: " + plan.getDays().get(0).getSteps().size());
 
         return planRepository.save(plan);
     }

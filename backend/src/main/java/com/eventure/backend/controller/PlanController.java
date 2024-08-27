@@ -36,4 +36,10 @@ public class PlanController {
     public Plan updatePlan(@AuthenticationPrincipal GoogleOAuth2User principal, @PathVariable Long planId, @RequestBody Plan plan){
         return planService.updatePlan(principal.getEmail(), planId, plan);
     }
+
+    @DeleteMapping(path="/{planId}")
+    @Transactional
+    public void deletePlan(@AuthenticationPrincipal GoogleOAuth2User principal, @PathVariable Long planId){
+        planService.deletePlan(principal.getEmail(), planId);
+    }
 }
