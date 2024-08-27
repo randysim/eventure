@@ -10,6 +10,7 @@ interface DashboardPlan {
     id: number;
     title: string;
     notes: string;
+    updatedAt: string;
 }
 
 interface Plan {

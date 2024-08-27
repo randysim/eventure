@@ -3,6 +3,8 @@ import UserContext from "@/components/context/UserContext"
 import { useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import DashboardPlan from "@/components/pages/dashboard/DashboardPlan";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
     const user = useContext(UserContext);
@@ -56,19 +58,22 @@ export default function Dashboard() {
 
     return (
         <div>
+            <div className="flex w-full justify-center flex-wrap">
+                <Input className="w-[500px] m-[20px]" placeholder="Plan Name" value={title} onChange={e => setTitle(e.target.value)} />
+                <Button className="w-[500px] m-[20px]" onClick={createPlan}>Create Plan</Button>
+            </div>
             <div>
                 {
                     plans.map(plan => (
                         <DashboardPlan 
                             key={plan.id} 
                             title={plan.title}
+                            updatedAt={plan.updatedAt}
                             onView={() => router.push(`/plans/${plan.id}`)} 
                         />
                     ))
                 }
             </div>
-            <input className="border-4 border-black" value={title} onChange={e => setTitle(e.target.value)} />
-            <button onClick={createPlan}>Create Plan</button>
         </div>
     )
 }

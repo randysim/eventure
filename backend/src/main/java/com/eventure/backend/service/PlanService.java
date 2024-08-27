@@ -57,7 +57,7 @@ public class PlanService {
         User user = userOptional.get();
         return user.getPlans()
                 .stream()
-                .map(plan -> new PlanResponseDTO(plan.getId(), plan.getTitle(), plan.getNotes()))
+                .map(plan -> new PlanResponseDTO(plan.getId(), plan.getTitle(), plan.getNotes(), plan.getUpdatedAt()))
                 .collect(Collectors.toList());
     }
 
@@ -98,7 +98,7 @@ public class PlanService {
         plan.setUpdatedAt(LocalDate.now());
 
         planRepository.save(plan);
-        return new PlanResponseDTO(plan.getId(), plan.getTitle(), plan.getNotes());
+        return new PlanResponseDTO(plan.getId(), plan.getTitle(), plan.getNotes(), plan.getUpdatedAt());
     }
 
     /* Update plan by id */
